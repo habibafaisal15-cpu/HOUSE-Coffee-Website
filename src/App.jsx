@@ -1,14 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Compass, Star, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Coffee, Compass, Star, Menu, X, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Replace 'hero.png' with your actual image file name inside src/assets/
-import displayImage from './assets/hero.png'; 
+// Importing your 3 local gallery assets
+import imgCroissant from './assets/house-coffee-gallery-cross.jpeg';
+import imgCups from './assets/house-coffee-gallery-cups.jpeg';
+import imgDessert from './assets/house-coffee-gallery-dess.jpeg';
 
 export default function HouseCoffeeWebsite() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cardRef = useRef(null);
   const [transformStyle, setTransformStyle] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+  
+  // Carousel State
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const galleryImages = [
+    { src: imgCroissant, label: "Flaky Artisanal Croissants" },
+    { src: imgCups, label: "Premium Specialty Brews" },
+    { src: imgDessert, label: "Luxury Signature Desserts" }
+  ];
 
   const popularItems = [
     { name: "Pistachio Latte", type: "Beverage", desc: "Creamy espresso with distinct, artisanal rich pistachio notes." },
@@ -17,26 +27,29 @@ export default function HouseCoffeeWebsite() {
     { name: "Artisanal Brownie", type: "Dessert", desc: "Fudgy, rich dark chocolate core served warm with a crackly top." }
   ];
 
-  // Mouse move handler calculating dynamic 3D tilting factors relative to container bounds
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
-    
     const card = cardRef.current;
     const box = card.getBoundingClientRect();
-    
     const x = e.clientX - box.left - box.width / 2;
     const y = e.clientY - box.top - box.height / 2;
-    
-    // Limits the total angular tilt constraint to 12 degrees
     const rotateX = -(y / (box.height / 2)) * 12; 
     const rotateY = (x / (box.width / 2)) * 12;
-
     setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
   };
 
   const handleMouseLeave = () => {
-    // Smoothly resets the transform state back to zero matrix values when focus leaves
     setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+  };
+
+  const nextSlide = (e) => {
+    e.stopPropagation(); // Prevents click conflict with the frame trigger
+    setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const prevSlide = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
   return (
@@ -58,7 +71,6 @@ export default function HouseCoffeeWebsite() {
           <span className="text-xs text-[#F9F6F0]/60 border-l border-[#F9F6F0]/30 pl-2">CANTT</span>
         </div>
 
-        {/* Desktop Links */}
         <div className="hidden md:flex space-x-8 text-sm tracking-widest uppercase font-light">
           <a href="#about" className="hover:text-[#b38f4d] transition-colors">The Vibe</a>
           <a href="#menu" className="hover:text-[#b38f4d] transition-colors">Signature Menu</a>
@@ -77,7 +89,6 @@ export default function HouseCoffeeWebsite() {
           </a>
         </div>
 
-        {/* Mobile Toggle */}
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-[#F9F6F0] z-50 relative">
           {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -160,7 +171,7 @@ export default function HouseCoffeeWebsite() {
         />
       </section>
 
-      {/* 3. EXPERIENCE & AMBIANCE SECTION (With Interactive 3D Frame Integration) */}
+      {/* 3. EXPERIENCE & AMBIANCE SECTION */}
       <section id="about" className="py-24 px-6 max-w-7xl mx-auto border-t border-[#F9F6F0]/5">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div 
@@ -177,36 +188,69 @@ export default function HouseCoffeeWebsite() {
             </p>
           </motion.div>
           
-          {/* 3D Interactive Graphic Element Placement Frame Container */}
+          {/* 3D Interactive Rotating Carousel Frame */}
           <div className="flex justify-center items-center perspective-[1000px]">
             <div
               ref={cardRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onClick={() => setCurrentIndex((prev) => (prev + 1) % galleryImages.length)}
               style={{ 
                 transform: transformStyle,
                 transformStyle: 'preserve-3d',
                 transition: 'transform 0.15s ease-out'
               }}
-              className="relative w-full max-w-[540px] aspect-[4/3] rounded-2xl bg-neutral-950/40 border border-neutral-800/60 p-3 shadow-2xl cursor-pointer overflow-hidden group"
+              className="relative w-full max-w-[540px] aspect-[4/3] rounded-2xl bg-neutral-950/40 border border-neutral-800/60 p-3 shadow-2xl cursor-pointer overflow-hidden group select-none"
             >
-              {/* Radial reflection overlay highlighting layout position depth fields */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#F9F6F0]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
 
-              {/* Your asset image imported cleanly */}
-              <img 
-                src={displayImage} 
-                alt="Cinematic Rooftop Deck View at HOUSE Cantt" 
-                className="w-full h-full object-cover rounded-xl select-none pointer-events-none"
-                style={{ transform: 'translateZ(30px)' }}
-              />
+              {/* Slider Controls */}
+              <button 
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white hover:border-[#b38f4d]"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white hover:border-[#b38f4d]"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
 
-              {/* Floating textual display element lifting forward out of the flat layer plane */}
+              {/* Active Image Render */}
+              <AnimatePresence mode="wait">
+                <motion.img 
+                  key={currentIndex}
+                  src={galleryImages[currentIndex].src} 
+                  alt={galleryImages[currentIndex].label}
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-cover rounded-xl pointer-events-none"
+                  style={{ transform: 'translateZ(30px)' }}
+                />
+              </AnimatePresence>
+
+              {/* Floating Carousel Caption */}
               <div 
                 style={{ transform: 'translateZ(55px)' }}
                 className="absolute bottom-6 left-6 right-6 text-center bg-[#0D0D0D]/80 backdrop-blur-md border border-[#F9F6F0]/10 p-3 rounded-xl z-20 transition-colors group-hover:border-[#b38f4d]/30"
               >
-                <p className="text-xs italic font-serif text-[#b38f4d] tracking-widest">Cinematic Rooftop & Cozy Sardi Vibe</p>
+                <p className="text-xs italic font-serif text-[#b38f4d] tracking-widest">
+                  {galleryImages[currentIndex].label}
+                </p>
+              </div>
+
+              {/* Dot Indicators */}
+              <div className="absolute top-6 right-6 flex space-x-1.5 z-30" style={{ transform: 'translateZ(40px)' }}>
+                {galleryImages.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[#b38f4d] w-4' : 'bg-white/30'}`} 
+                  />
+                ))}
               </div>
             </div>
           </div>
