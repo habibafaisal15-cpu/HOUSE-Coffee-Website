@@ -1,20 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Compass, ShoppingBag, Star, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Coffee, Compass, Star, Menu, X, ArrowUpRight } from 'lucide-react';
+
+// Replace 'hero.png' with your actual image file name inside src/assets/
+import displayImage from './assets/hero.png'; 
 
 export default function HouseCoffeeWebsite() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const cardRef = useRef(null);
+  const [transformStyle, setTransformStyle] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
 
-  // Top trending items scraped directly from local user evaluation signals
   const popularItems = [
-    { name: "Pistachio Latte", type: "Beverage", desc: "Creamy espresso with distinct, artisanal rich pistachio notes.", count: 19 },
-    { name: "Spanish Latte", type: "Beverage", desc: "Perfectly balanced specialty espresso cut with sweet texturized milk.", count: 25 },
-    { name: "Lotus Cheesecake", type: "Dessert", desc: "Velvety smooth cheese base resting on a crunchy speculoos crust.", count: 15 },
-    { name: "Artisanal Brownie", type: "Dessert", desc: "Fudgy, rich dark chocolate core served warm with a crackly top.", count: 14 }
+    { name: "Pistachio Latte", type: "Beverage", desc: "Creamy espresso with distinct, artisanal rich pistachio notes." },
+    { name: "Spanish Latte", type: "Beverage", desc: "Perfectly balanced specialty espresso cut with sweet texturized milk." },
+    { name: "Lotus Cheesecake", type: "Dessert", desc: "Velvety smooth cheese base resting on a crunchy speculoos crust." },
+    { name: "Artisanal Brownie", type: "Dessert", desc: "Fudgy, rich dark chocolate core served warm with a crackly top." }
   ];
 
+  // Mouse move handler calculating dynamic 3D tilting factors relative to container bounds
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    
+    const card = cardRef.current;
+    const box = card.getBoundingClientRect();
+    
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+    
+    // Limits the total angular tilt constraint to 12 degrees
+    const rotateX = -(y / (box.height / 2)) * 12; 
+    const rotateY = (x / (box.width / 2)) * 12;
+
+    setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+  };
+
+  const handleMouseLeave = () => {
+    // Smoothly resets the transform state back to zero matrix values when focus leaves
+    setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+  };
+
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-[#F9F6F0] font-sans selection:bg-[#b38f4d] selection:text-black">
+    <div className="min-h-screen bg-[#0D0D0D] text-[#F9F6F0] font-sans selection:bg-[#b38f4d] selection:text-black overflow-x-hidden">
       
       {/* Cinematic Background Glow Elements */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#b38f4d]/5 rounded-full blur-[120px] pointer-events-none" />
@@ -52,7 +78,7 @@ export default function HouseCoffeeWebsite() {
         </div>
 
         {/* Mobile Toggle */}
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-[#F9F6F0]">
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-[#F9F6F0] z-50 relative">
           {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </motion.nav>
@@ -64,14 +90,16 @@ export default function HouseCoffeeWebsite() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-[60px] left-0 w-full bg-[#0D0D0D] border-b border-[#F9F6F0]/10 z-40 flex flex-col p-6 space-y-4 text-center tracking-widest uppercase font-light"
+            className="fixed top-0 left-0 w-full h-screen bg-[#0D0D0D] z-40 flex flex-col justify-center items-center space-y-6 text-center tracking-widest uppercase font-light px-6"
           >
-            <a href="#about" onClick={() => setIsMenuOpen(false)} className="py-2">The Vibe</a>
-            <a href="#menu" onClick={() => setIsMenuOpen(false)} className="py-2">Signature Menu</a>
-            <a href="#reviews" onClick={() => setIsMenuOpen(false)} className="py-2">Stories</a>
+            <a href="#about" onClick={() => setIsMenuOpen(false)} className="text-xl py-2 hover:text-[#b38f4d]">The Vibe</a>
+            <a href="#menu" onClick={() => setIsMenuOpen(false)} className="text-xl py-2 hover:text-[#b38f4d]">Signature Menu</a>
+            <a href="#reviews" onClick={() => setIsMenuOpen(false)} className="text-xl py-2 hover:text-[#b38f4d]">Stories</a>
             <a 
               href="https://www.foodpanda.pk/restaurant/unsd/house-specialty-coffee-cantt"
-              className="bg-[#b38f4d] text-black py-3 rounded-full font-medium text-xs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full max-w-xs bg-[#b38f4d] text-black py-3 rounded-full font-medium text-xs tracking-widest"
             >
               ORDER NOW
             </a>
@@ -79,7 +107,7 @@ export default function HouseCoffeeWebsite() {
         )}
       </AnimatePresence>
 
-      {/* 2. HERO DISPLAY SCREEN (Cinematic Entrance) */}
+      {/* 2. HERO DISPLAY SCREEN */}
       <section className="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
         <div className="text-center max-w-4xl z-10">
           <motion.p 
@@ -114,7 +142,7 @@ export default function HouseCoffeeWebsite() {
               <span>Explore Menu</span>
             </a>
             <a 
-              href="https://maps.app.goo.gl/xYjyqwj6nuBNwX9g6" 
+              href="https://maps.google.com" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-[#F9F6F0] text-black hover:bg-[#b38f4d] hover:text-black px-8 py-3 rounded-full text-sm tracking-widest uppercase font-medium transition-all"
@@ -125,7 +153,6 @@ export default function HouseCoffeeWebsite() {
           </motion.div>
         </div>
 
-        {/* Ambient Subtle Geometric Line Animation */}
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -133,9 +160,9 @@ export default function HouseCoffeeWebsite() {
         />
       </section>
 
-      {/* 3. EXPERIENCE & AMBIANCE SECTION */}
+      {/* 3. EXPERIENCE & AMBIANCE SECTION (With Interactive 3D Frame Integration) */}
       <section id="about" className="py-24 px-6 max-w-7xl mx-auto border-t border-[#F9F6F0]/5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <motion.div 
             whileInView={{ opacity: 1, x: 0 }}
             initial={{ opacity: 0, x: -30 }}
@@ -150,18 +177,39 @@ export default function HouseCoffeeWebsite() {
             </p>
           </motion.div>
           
-          <motion.div 
-            whileInView={{ opacity: 0.8, scale: 1 }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            viewport={{ once: true }}
-            className="h-[400px] bg-gradient-to-tr from-[#1a1a1a] to-[#2d2d2d] rounded-2xl flex items-center justify-center border border-[#F9F6F0]/10 shadow-2xl relative overflow-hidden"
-          >
-            {/* Elegant visual placeholder referencing image dynamic aesthetics */}
-            <div className="text-center p-8">
-              <p className="text-sm italic text-[#b38f4d] tracking-widest mb-2">Cinematic Rooftop & Cozy Sardi Vibe</p>
-              <p className="text-xs text-[#F9F6F0]/40">[ Visual Asset Frame Location ]</p>
+          {/* 3D Interactive Graphic Element Placement Frame Container */}
+          <div className="flex justify-center items-center perspective-[1000px]">
+            <div
+              ref={cardRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ 
+                transform: transformStyle,
+                transformStyle: 'preserve-3d',
+                transition: 'transform 0.15s ease-out'
+              }}
+              className="relative w-full max-w-[540px] aspect-[4/3] rounded-2xl bg-neutral-950/40 border border-neutral-800/60 p-3 shadow-2xl cursor-pointer overflow-hidden group"
+            >
+              {/* Radial reflection overlay highlighting layout position depth fields */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#F9F6F0]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
+
+              {/* Your asset image imported cleanly */}
+              <img 
+                src={displayImage} 
+                alt="Cinematic Rooftop Deck View at HOUSE Cantt" 
+                className="w-full h-full object-cover rounded-xl select-none pointer-events-none"
+                style={{ transform: 'translateZ(30px)' }}
+              />
+
+              {/* Floating textual display element lifting forward out of the flat layer plane */}
+              <div 
+                style={{ transform: 'translateZ(55px)' }}
+                className="absolute bottom-6 left-6 right-6 text-center bg-[#0D0D0D]/80 backdrop-blur-md border border-[#F9F6F0]/10 p-3 rounded-xl z-20 transition-colors group-hover:border-[#b38f4d]/30"
+              >
+                <p className="text-xs italic font-serif text-[#b38f4d] tracking-widest">Cinematic Rooftop & Cozy Sardi Vibe</p>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -220,7 +268,7 @@ export default function HouseCoffeeWebsite() {
         <p className="mb-2">📍 Cantt, Lahore, Pakistan</p>
         <p className="mb-6">⏱️ Open Daily for Morning Brews & Late Night Rooftop Gatherings</p>
         <div className="text-[10px] text-[#F9F6F0]/20">
-          &copy; {new Date().getFullYear()} HOUSE Cantt. Designed dynamically for absolute immersion.
+          © {new Date().getFullYear()} HOUSE Cantt. Designed dynamically for absolute immersion.
         </div>
       </footer>
     </div>
