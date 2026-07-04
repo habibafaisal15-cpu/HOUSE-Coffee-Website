@@ -58,7 +58,8 @@ export default function HouseCoffeeWebsite() {
       className="min-h-screen text-[#F9F6F0] font-sans selection:bg-[#b38f4d] selection:text-black overflow-x-hidden bg-fixed bg-cover bg-center relative"
     >
       {/* 3. FIXED OVERLAY: Cleaned up the conflicting 'absolute' class from line 61 */}
-      <div className="fixed inset-0 bg-black/90 pointer-events-none z-0" />
+      {/* Change bg-black/90 to bg-black/50 on this line: */}
+<div className="fixed inset-0 bg-black/50 pointer-events-none z-0" />
 
       {/* Wrapping the content layers so they appear above the background image overlay */}
       <div className="relative z-10">
