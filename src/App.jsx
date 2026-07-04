@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Compass, Star, Menu, X, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Coffee, Compass, Star, Menu, X, ArrowUpRight } from 'lucide-react';
 
-// Importing your 3 local gallery assets
+// Importing your local gallery assets
 import imgCroissant from './assets/house-coffee-gallery-cross.jpeg';
 import imgCups from './assets/house-coffee-gallery-cups.jpeg';
 import imgDessert from './assets/house-coffee-gallery-dess.jpeg';
@@ -27,29 +27,33 @@ export default function HouseCoffeeWebsite() {
     { name: "Artisanal Brownie", type: "Dessert", desc: "Fudgy, rich dark chocolate core served warm with a crackly top." }
   ];
 
+  // AUTOMATIC TRANSITION TIMER
+  useEffect(() => {
+    // Automatically switch images every 4 seconds
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [galleryImages.length]);
+
+  // 3D INTERACTIVE MOUSE TRACKING
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     const card = cardRef.current;
     const box = card.getBoundingClientRect();
     const x = e.clientX - box.left - box.width / 2;
     const y = e.clientY - box.top - box.height / 2;
+    
+    // Smooth custom tilt limits
     const rotateX = -(y / (box.height / 2)) * 12; 
     const rotateY = (x / (box.width / 2)) * 12;
     setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
   };
 
   const handleMouseLeave = () => {
+    // Smooth snap-back when mouse exits the frame area
     setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
-  };
-
-  const nextSlide = (e) => {
-    e.stopPropagation(); // Prevents click conflict with the frame trigger
-    setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
-  };
-
-  const prevSlide = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
   return (
@@ -59,7 +63,7 @@ export default function HouseCoffeeWebsite() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#b38f4d]/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#8c6d31]/5 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* 1. ANIMATED NAVIGATION BAR */}
+      {/* 1. NAVIGATION BAR */}
       <motion.nav 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -139,12 +143,7 @@ export default function HouseCoffeeWebsite() {
             Where Aesthetic <br />Meets <span className="italic font-normal text-[#b38f4d]">Fine Roast</span>.
           </motion.h1>
 
-          <motion.div 
-            initial={{ y: 25, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4"
-          >
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <a 
               href="#menu" 
               className="w-full sm:w-auto flex items-center justify-center space-x-2 border border-[#F9F6F0]/30 hover:border-[#b38f4d] px-8 py-3 rounded-full text-sm tracking-widest uppercase transition-all"
@@ -161,7 +160,7 @@ export default function HouseCoffeeWebsite() {
               <Compass className="w-4 h-4" />
               <span>Find Us in Cantt</span>
             </a>
-          </motion.div>
+          </div>
         </div>
 
         <motion.div 
@@ -188,52 +187,39 @@ export default function HouseCoffeeWebsite() {
             </p>
           </motion.div>
           
-          {/* 3D Interactive Rotating Carousel Frame */}
+          {/* 3D Self-Playing Parallax Image Frame Container */}
           <div className="flex justify-center items-center perspective-[1000px]">
             <div
               ref={cardRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              onClick={() => setCurrentIndex((prev) => (prev + 1) % galleryImages.length)}
               style={{ 
                 transform: transformStyle,
                 transformStyle: 'preserve-3d',
-                transition: 'transform 0.15s ease-out'
+                transition: 'transform 0.2s ease-out'
               }}
-              className="relative w-full max-w-[540px] aspect-[4/3] rounded-2xl bg-neutral-950/40 border border-neutral-800/60 p-3 shadow-2xl cursor-pointer overflow-hidden group select-none"
+              className="relative w-full max-w-[540px] aspect-[4/3] rounded-2xl bg-neutral-950/40 border border-neutral-800/60 p-3 shadow-2xl overflow-hidden group select-none"
             >
+              {/* Glossy light reflection sheen */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#F9F6F0]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
 
-              {/* Slider Controls */}
-              <button 
-                onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white hover:border-[#b38f4d]"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white hover:border-[#b38f4d]"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              {/* Seamless 3D Animated Slide Swap Layer */}
+              <div className="w-full h-full relative rounded-xl overflow-hidden" style={{ transform: 'translateZ(30px)' }}>
+                <AnimatePresence mode="wait">
+                  <motion.img 
+                    key={currentIndex}
+                    src={galleryImages[currentIndex].src} 
+                    alt={galleryImages[currentIndex].label}
+                    initial={{ opacity: 0, scale: 1.05, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
+                    transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
+                    className="w-full h-full object-cover absolute inset-0 pointer-events-none"
+                  />
+                </AnimatePresence>
+              </div>
 
-              {/* Active Image Render */}
-              <AnimatePresence mode="wait">
-                <motion.img 
-                  key={currentIndex}
-                  src={galleryImages[currentIndex].src} 
-                  alt={galleryImages[currentIndex].label}
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-full h-full object-cover rounded-xl pointer-events-none"
-                  style={{ transform: 'translateZ(30px)' }}
-                />
-              </AnimatePresence>
-
-              {/* Floating Carousel Caption */}
+              {/* Floating Carousel Caption Box */}
               <div 
                 style={{ transform: 'translateZ(55px)' }}
                 className="absolute bottom-6 left-6 right-6 text-center bg-[#0D0D0D]/80 backdrop-blur-md border border-[#F9F6F0]/10 p-3 rounded-xl z-20 transition-colors group-hover:border-[#b38f4d]/30"
@@ -243,7 +229,7 @@ export default function HouseCoffeeWebsite() {
                 </p>
               </div>
 
-              {/* Dot Indicators */}
+              {/* Minimalist Dashboard Progress Dot Matrix */}
               <div className="absolute top-6 right-6 flex space-x-1.5 z-30" style={{ transform: 'translateZ(40px)' }}>
                 {galleryImages.map((_, i) => (
                   <div 
