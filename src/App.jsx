@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coffee, Compass, Star, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Coffee, Compass, Star, Menu, X, ArrowUpRight, Award } from 'lucide-react';
 
-// Importing your gallery images
+// Gallery Assets
 import imgCroissant from './assets/house-coffee-gallery-cross.jpeg';
 import imgCups from './assets/house-coffee-gallery-cups.jpeg';
 import imgDessert from './assets/house-coffee-gallery-dess.jpeg';
-
-// 1. IMPORT YOUR BACKGROUND IMAGE USING THE EXACT FILENAME
 import bgImage from './assets/Capture.PNG'; 
 
 export default function HouseCoffeeWebsite() {
@@ -15,6 +13,7 @@ export default function HouseCoffeeWebsite() {
   const cardRef = useRef(null);
   const [transformStyle, setTransformStyle] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
   
+  // Carousel State
   const [currentIndex, setCurrentIndex] = useState(0);
   const galleryImages = [
     { src: imgCroissant, label: "Flaky Artisanal Croissants" },
@@ -22,12 +21,49 @@ export default function HouseCoffeeWebsite() {
     { src: imgDessert, label: "Luxury Signature Desserts" }
   ];
 
-  const popularItems = [
-    { name: "Pistachio Latte", type: "Beverage", desc: "Creamy espresso with distinct, artisanal rich pistachio notes." },
-    { name: "Spanish Latte", type: "Beverage", desc: "Perfectly balanced specialty espresso cut with sweet texturized milk." },
-    { name: "Lotus Cheesecake", type: "Dessert", desc: "Velvety smooth cheese base resting on a crunchy speculoos crust." },
-    { name: "Artisanal Brownie", type: "Dessert", desc: "Fudgy, rich dark chocolate core served warm with a crackly top." }
-  ];
+  // Menu Category Filter State
+  const [activeTab, setActiveTab] = useState('coffee');
+
+  // COMPLETE AUTHENTIC HOUSE CANNT MENU DATA DIRECTLY FROM LOG SIGNS
+  const fullMenuData = {
+    coffee: [
+      { name: "Espresso", price: "PKR 400", type: "Classic Hot / Iced" },
+      { name: "Double Espresso", price: "PKR 490", type: "Classic Hot / Iced" },
+      { name: "Cortado", price: "PKR 590", type: "Classic Hot / Iced" },
+      { name: "Flat White", price: "PKR 700", type: "Classic Hot / Iced" },
+      { name: "Latte", price: "PKR 650", type: "Classic Hot / Iced" },
+      { name: "Cappuccino", price: "PKR 510", type: "Classic Hot / Iced" },
+      { name: "Americano", price: "PKR 510", type: "Classic Hot / Iced" },
+    ],
+    latteLab: [
+      { name: "Spanish Latte", price: "PKR 750", type: "Latte Lab Specialty", popular: true },
+      { name: "Flavour Latte (Hazelnut / Vanilla / Caramel / Cinnamon)", price: "PKR 760", type: "Latte Lab" },
+      { name: "Belgium Brown", price: "PKR 850", type: "Signature Craft", popular: true },
+      { name: "Pistachio Cinnamon Latte", price: "PKR 1,395", type: "Signature Craft", popular: true },
+      { name: "Pistachio Latte", price: "PKR 1,250", type: "Signature Craft" },
+      { name: "Matcha Latte", price: "PKR 850", type: "Pure Uji Matcha" },
+      { name: "Flavoured Matcha (Raspberry / Mango / Strawberry)", price: "PKR 1,295", type: "Matcha Lab" },
+      { name: "Coconut Mango Matcha", price: "PKR 1,350", type: "Matcha Blend" },
+      { name: "Coconut Strawberry Matcha", price: "PKR 1,350", type: "Matcha Blend" },
+    ],
+    frappesAndTeas: [
+      { name: "Dark Chocolate Mocha", price: "PKR 900", type: "Frappe Blend" },
+      { name: "Caramel Crush", price: "PKR 800", type: "Frappe Blend" },
+      { name: "Pistachio Frappe", price: "PKR 1,200", type: "Signature Frappe", popular: true },
+      { name: "Iced Tea (Peach / Raspberry / Passion Fruit)", price: "PKR 695", type: "Refreshing Friz" },
+      { name: "Passion Fruit Espresso Friz", price: "PKR 810", type: "Signature Fusion", popular: true },
+    ],
+    bakery: [
+      { name: "San Sebastian Cheesecake (Plain / Pistachio)", price: "From PKR 1,195", type: "Luxury Cake", popular: true },
+      { name: "Matilda Cake", price: "PKR 1,100", type: "Luxury Cake" },
+      { name: "Tiramisu", price: "PKR 995", type: "Classic Dessert", popular: true },
+      { name: "Swiss Chocolate Walnut Brownie", price: "PKR 495", type: "Bakery Fresh" },
+      { name: "Almond Croissant", price: "PKR 820", type: "Artisanal Pastry", popular: true },
+      { name: "Lemon Tart", price: "PKR 450", type: "Bakery Mini" },
+      { name: "Pistachio Tart", price: "PKR 450", type: "Bakery Mini" },
+      { name: "Chilli Crisp Mayo / Pesto Sandwich", price: "From PKR 895", type: "Gourmet Savory" },
+    ]
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,16 +88,13 @@ export default function HouseCoffeeWebsite() {
   };
 
   return (
-    /* 2. REPLACED TEXTURE WRAPPER: Fixed background layout with a dark overlay blend */
     <div 
       style={{ backgroundImage: `url(${bgImage})` }} 
       className="min-h-screen text-[#F9F6F0] font-sans selection:bg-[#b38f4d] selection:text-black overflow-x-hidden bg-fixed bg-cover bg-center relative"
     >
-      {/* 3. FIXED OVERLAY: Cleaned up the conflicting 'absolute' class from line 61 */}
-      {/* Change bg-black/90 to bg-black/50 on this line: */}
-<div className="fixed inset-0 bg-black/50 pointer-events-none z-0" />
+      {/* Background Dim Overlay */}
+      <div className="fixed inset-0 bg-black/50 pointer-events-none z-0" />
 
-      {/* Wrapping the content layers so they appear above the background image overlay */}
       <div className="relative z-10">
         
         {/* Cinematic Background Glow Elements */}
@@ -235,7 +268,7 @@ export default function HouseCoffeeWebsite() {
                     <div 
                       key={i} 
                       className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[#b38f4d] w-4' : 'bg-white/30'}`} 
-                  />
+                    />
                   ))}
                 </div>
               </div>
@@ -243,34 +276,84 @@ export default function HouseCoffeeWebsite() {
           </div>
         </section>
 
-        {/* 4. VISUAL MENU GRID */}
-        <section id="menu" className="py-24 bg-[#111111]/80 backdrop-blur-sm px-6 border-t border-b border-[#F9F6F0]/5">
+        {/* 4. DYNAMIC COMPLETE TABBED MENU SECTION */}
+        <section id="menu" className="py-24 bg-[#111111]/85 backdrop-blur-md px-6 border-t border-b border-[#F9F6F0]/5">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <span className="text-xs tracking-[0.3em] text-[#b38f4d] uppercase font-semibold">Handcrafted Flavors</span>
-              <h2 className="text-3xl md:text-5xl font-serif font-light mt-2">The Signature Collection</h2>
+              <h2 className="text-3xl md:text-5xl font-serif font-light mt-2 mb-8">The Complete Collection</h2>
+              
+              {/* Category Selection Tabs Navigation */}
+              <div className="flex flex-wrap justify-center gap-2 md:gap-4 max-w-3xl mx-auto border border-[#F9F6F0]/10 p-1.5 rounded-full bg-[#0D0D0D]/60">
+                <button 
+                  onClick={() => setActiveTab('coffee')}
+                  className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all ${activeTab === 'coffee' ? 'bg-[#b38f4d] text-black font-medium shadow-md' : 'text-[#F9F6F0]/60 hover:text-white'}`}
+                >
+                  Classic Brews
+                </button>
+                <button 
+                  onClick={() => setActiveTab('latteLab')}
+                  className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all ${activeTab === 'latteLab' ? 'bg-[#b38f4d] text-black font-medium shadow-md' : 'text-[#F9F6F0]/60 hover:text-white'}`}
+                >
+                  Latte Lab & Matcha
+                </button>
+                <button 
+                  onClick={() => setActiveTab('frappesAndTeas')}
+                  className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all ${activeTab === 'frappesAndTeas' ? 'bg-[#b38f4d] text-black font-medium shadow-md' : 'text-[#F9F6F0]/60 hover:text-white'}`}
+                >
+                  Frappes & Friz
+                </button>
+                <button 
+                  onClick={() => setActiveTab('bakery')}
+                  className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all ${activeTab === 'bakery' ? 'bg-[#b38f4d] text-black font-medium shadow-md' : 'text-[#F9F6F0]/60 hover:text-white'}`}
+                >
+                  Bakery & Desserts
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {popularItems.map((item, index) => (
-                <motion.div 
-                  key={index}
-                  whileHover={{ y: -8, borderColor: 'rgba(179, 143, 77, 0.4)' }}
-                  className="bg-[#0D0D0D]/90 border border-[#F9F6F0]/5 p-6 rounded-xl transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <span className="text-[10px] tracking-widest uppercase bg-[#F9F6F0]/5 text-[#b38f4d] px-2 py-1 rounded">
-                      {item.type}
-                    </span>
-                    <h3 className="text-lg font-serif mt-4 mb-2 font-medium">{item.name}</h3>
-                    <p className="text-xs text-[#F9F6F0]/60 font-light line-clamp-3 leading-relaxed">{item.desc}</p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-[#F9F6F0]/5 flex items-center justify-between text-xs text-[#F9F6F0]/40">
-                    <span className="flex items-center"><Star className="w-3 h-3 text-[#b38f4d] mr-1 fill-[#b38f4d]" /> Community Favorite</span>
-                    <span>⭐ Top Pick</span>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Grid Container rendering currently active dataset dynamically */}
+            <motion.div 
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <AnimatePresence mode="popLayout">
+                {fullMenuData[activeTab].map((item, index) => (
+                  <motion.div 
+                    layout
+                    key={item.name}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, delay: index * 0.04 }}
+                    whileHover={{ y: -6, borderColor: 'rgba(179, 143, 77, 0.4)' }}
+                    className="bg-[#0D0D0D]/90 border border-[#F9F6F0]/5 p-6 rounded-xl flex flex-col justify-between group transition-all relative overflow-hidden"
+                  >
+                    {item.popular && (
+                      <div className="absolute top-0 right-0 bg-[#b38f4d] text-black px-3 py-1 rounded-bl-lg font-medium text-[9px] tracking-widest uppercase flex items-center gap-1">
+                        <Award className="w-2.5 h-2.5" /> Signature
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-[9px] tracking-widest uppercase bg-[#F9F6F0]/5 text-[#b38f4d] px-2 py-0.5 rounded">
+                        {item.type}
+                      </span>
+                      <h3 className="text-base font-serif mt-4 mb-2 font-medium tracking-wide text-white group-hover:text-[#b38f4d] transition-colors">{item.name}</h3>
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-[#F9F6F0]/5 flex items-center justify-between font-serif font-medium text-[#b38f4d] text-sm">
+                      <span className="text-[10px] font-sans tracking-wider text-[#F9F6F0]/40 flex items-center">
+                        <Star className={`w-3 h-3 mr-1 ${item.popular ? 'text-[#b38f4d] fill-[#b38f4d]' : 'text-[#F9F6F0]/20'}`} /> Premium
+                      </span>
+                      <span>{item.price}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+            
+            {/* Milk Alternatives Note Panel */}
+            <div className="mt-12 text-center text-xs text-[#F9F6F0]/40 font-light border-t border-[#F9F6F0]/5 pt-6">
+              🥛 Custom Milk Bar Alterations: Lactose Free Milk (+PKR 800)  |  Oat Milk (+PKR 800)
             </div>
           </div>
         </section>
